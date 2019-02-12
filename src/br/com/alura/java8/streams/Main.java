@@ -3,6 +3,9 @@ package br.com.alura.java8.streams;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -54,5 +57,40 @@ public class Main {
 				   .mapToInt(Curso::getAlunos)
 				   .sum();
 		System.out.println(soma);
+		
+		//Retorna apenas um elemento Optional<Curso>
+		Optional<Curso> optional = cursos.stream()
+		   .filter(c -> c.getAlunos() > 100)
+		   .findAny();
+		
+		/*nesse caso poderia ser lancada uma exception
+		Curso curso = optional.get();*/
+		
+		//Nesse caso, evita o exception
+		Curso curso = optional.orElse(null);
+		
+		System.out.println("================== findAny/optional  ======================");
+		
+		optional.ifPresent(c -> System.out.println(c.getNome()));
+		
+		/* apenas em uma linha
+		cursos.stream()
+		   .filter(c -> c.getAlunos() > 100)
+		   .findAny()
+		   .ifPresent(c -> System.out.println(c.getNome()));
+		 */
+		
+		// .collect(Collectors.toList()); usado para extrair a lista de uma stream
+		cursos = cursos.stream()
+				   .filter(c -> c.getAlunos() > 100)
+				   .collect(Collectors.toList());
+		
+		// extrair o resultado da pesquisa para um map, o primeiro atributo é a chave, o segundo é o valor
+		Map mapa = cursos 
+				.stream() 
+				.filter(c -> c.getAlunos() > 100) 
+				.collect(Collectors.toMap(c -> c.getNome(), c -> c.getAlunos()));
+		
+		// parallelStream() para criar threads nas buscas.
 	}
 }
